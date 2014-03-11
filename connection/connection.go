@@ -1,5 +1,7 @@
+//Connection represents the connection to the server and
+//contains Connection and Encryption objects.
 package connection
 
-func Test() string {
-	return "test..."
+type Connection struct {
+	//not finished
 }
