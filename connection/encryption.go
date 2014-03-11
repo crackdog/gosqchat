@@ -52,8 +52,9 @@ func (e *Encryption) LoadKeyFile(filename string) bool {
 //SaveKeyFile saves the key from e in a file.
 func (e *Encryption) SaveKeyFile(filename string) bool {
     data := []byte(e.Key())
-    err := ioutil.WriteFile(filename, data, 0666)
+    err := ioutil.WriteFile(filename, data, 0644)
     if err != nil {
+        panic(err)
         return false
     }
     return true
