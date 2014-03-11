@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"math/rand"
 	"time"
+    "io/ioutil"
 )
 
 //Encryption
@@ -26,12 +27,36 @@ func NewEncryption(base64key string) *Encryption {
 //SetKey sets a new key for an Encryption object.
 func (e *Encryption) SetKey(base64key string) bool {
 	e.key = base64key
-	var ok error
-	e.binkey, ok = base64.StdEncoding.DecodeString(base64key)
-	if ok != nil {
+    if base64key == "" {
+        e.binkey = make([]byte, 1)
+        e.binkey[0] = 0
+        return true
+    }
+	var err error
+	e.binkey, err = base64.StdEncoding.DecodeString(base64key)
+	if err != nil {
 		return false
 	}
 	return true
+}
+
+//LoadKeyFile loads a key from a file and saves it in e.
+func (e *Encryption) LoadKeyFile(filename string) bool {
+    key, err := ioutil.ReadFile(filename)
+    if err != nil {
+        return false
+    }
+    return e.SetKey(string(key))
+}
+
+//SaveKeyFile saves the key from e in a file.
+func (e *Encryption) SaveKeyFile(filename string) bool {
+    data := []byte(e.Key())
+    err := ioutil.WriteFile(filename, data, 0666)
+    if err != nil {
+        return false
+    }
+    return true
 }
 
 //Key gets the key from an Encryption object.
