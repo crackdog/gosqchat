@@ -2,9 +2,9 @@ package connection
 
 import (
 	"encoding/base64"
+	"io/ioutil"
 	"math/rand"
 	"time"
-    "io/ioutil"
 )
 
 //Encryption
@@ -27,11 +27,11 @@ func NewEncryption(base64key string) *Encryption {
 //SetKey sets a new key for an Encryption object.
 func (e *Encryption) SetKey(base64key string) bool {
 	e.key = base64key
-    if base64key == "" {
-        e.binkey = make([]byte, 1)
-        e.binkey[0] = 0
-        return true
-    }
+	if base64key == "" {
+		e.binkey = make([]byte, 1)
+		e.binkey[0] = 0
+		return true
+	}
 	var err error
 	e.binkey, err = base64.StdEncoding.DecodeString(base64key)
 	if err != nil {
@@ -42,22 +42,22 @@ func (e *Encryption) SetKey(base64key string) bool {
 
 //LoadKeyFile loads a key from a file and saves it in e.
 func (e *Encryption) LoadKeyFile(filename string) bool {
-    key, err := ioutil.ReadFile(filename)
-    if err != nil {
-        return false
-    }
-    return e.SetKey(string(key))
+	key, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return false
+	}
+	return e.SetKey(string(key))
 }
 
 //SaveKeyFile saves the key from e in a file.
 func (e *Encryption) SaveKeyFile(filename string) bool {
-    data := []byte(e.Key())
-    err := ioutil.WriteFile(filename, data, 0644)
-    if err != nil {
-        panic(err)
-        return false
-    }
-    return true
+	data := []byte(e.Key())
+	err := ioutil.WriteFile(filename, data, 0644)
+	if err != nil {
+		panic(err)
+		return false
+	}
+	return true
 }
 
 //Key gets the key from an Encryption object.
