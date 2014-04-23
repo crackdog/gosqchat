@@ -66,6 +66,6 @@ func (c *Connection) IsClosed() bool {
 
 //IsConnected returns true if the connection is established
 func (c *Connection) IsConnected() bool {
-    //implementation is not finished...
-    return false
+	//implementation is not finished...
+	return false
 }
