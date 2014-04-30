@@ -2,9 +2,10 @@
 package ts3sq
 
 import (
-	"errors"
+	"bufio"
 	"fmt"
 	"net"
+	"strings"
 )
 
 type Ts3sqs struct {
@@ -32,15 +33,27 @@ func (s *Ts3sqs) send(msg string) error {
 }
 
 func escape(s string) string {
+	//escape replaces all spaces with \s
 	return s
 }
 
-func WaitForMessage() string {
-	panic("Clientlist() is not implemented yet")
+func (s *Ts3sqs) WaitForMessageLine() (string, error) {
+	//WaitForMessageLine reads a line from the server connection.
+	return bufio.NewReader(s.serverconn).ReadString('\n')
 }
 
 func (s *Ts3sqs) getError() error {
-	return errors.New("not implemented")
+	//getError returns the error message from the server.
+	msg, err := s.WaitForMessageLine()
+	if err != nil {
+		return err
+	} else {
+		if strings.Contains(msg, "error id=0 msg=ok") {
+			return nil
+		} else {
+			return fmt.Errorf("msg error: '%s'", strings.TrimSpace(msg))
+		}
+	}
 }
 
 func (s *Ts3sqs) sendWithGettingError(msg string) error {
