@@ -4,7 +4,9 @@ package ts3sq
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
+	"os"
 	"strings"
 )
 
@@ -36,15 +38,22 @@ func NewError(id int, msg, extraMsg string) Error {
 //Ts3sqs contains a connection to a ts3server.
 type Ts3sqs struct {
 	serverconn net.Conn
+	log        *log.Logger
 	WelcomeMsg string
 }
 
 //New create a new ts3serverquery connection.
-func New(address string) (t *Ts3sqs, err error) {
+func New(address string, logger *log.Logger) (t *Ts3sqs, err error) {
 	c, err := net.Dial("tcp", address)
 	if err == nil {
 		t := new(Ts3sqs)
 		t.serverconn = c
+		if logger != nil {
+			t.log = logger
+		} else {
+			t.log = log.New(os.Stdout, "", log.LstdFlags)
+		}
+        t.log.Print("connected to ts3server")
 		t.WelcomeMsg, err = t.WaitForMessageLine()
 		if err != nil {
 			c.Close()
@@ -69,7 +78,7 @@ func (s *Ts3sqs) Close() {
 }
 
 func (s *Ts3sqs) send(msg string) error {
-	fmt.Printf("sending: '%s'\n", msg)
+	s.log.Printf("sending: '%s'", strings.TrimSpace(msg))
 	length, err := s.serverconn.Write([]byte(msg))
 	if err == nil && length < len(msg) {
 		return fmt.Errorf("only %d of %d bytes were sended.", length, len(msg))
